@@ -1,0 +1,2 @@
+COMPONENT_SRCDIRS := main zforth
+COMPONENT_ADD_INCLUDEDIRS := main zforth
