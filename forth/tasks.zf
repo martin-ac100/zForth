@@ -1,0 +1,2 @@
+
+: task ( XT -- ) : ' lit , here 5 allot here swap ! 
