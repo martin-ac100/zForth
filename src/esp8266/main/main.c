@@ -26,5 +26,5 @@
 
 void app_main()
 {
-    xTaskCreate(uart_cmdline, "uart_cmdline_task", 16384, NULL, 10, NULL);
+    xTaskCreate(uart_cmdline, "uart_cmdline_task", 32768, NULL, 10, NULL);
 }

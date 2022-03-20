@@ -73,8 +73,6 @@ static uint8_t dict[ZF_DICT_SIZE];
 /* State and stack and interpreter pointers */
 
 static zf_input_state input_state;
-static zf_addr dsp;
-static zf_addr rsp;
 static zf_addr ip;
 
 /* setjmp env for handling aborts */
@@ -91,9 +89,11 @@ static jmp_buf jmpbuf;
 #define TRACE     uservar[ZF_USERVAR_TRACE]     /* trace enable flag */
 #define COMPILING uservar[ZF_USERVAR_COMPILING] /* compiling flag */
 #define POSTPONE  uservar[ZF_USERVAR_POSTPONE]  /* flag to indicate next imm word should be compiled */
+#define dsp	  uservar[ZF_USERVAR_DSP]
+#define rsp	  uservar[ZF_USERVAR_RSP]
 
 static const char uservar_names[] =
-	_("h")   _("latest") _("trace")  _("compiling")  _("_postpone");
+	_("h")   _("latest") _("trace")  _("compiling")  _("_postpone")	_("dsp") _("rsp") _("tasks");
 
 static zf_addr *uservar = (zf_addr *)dict;
 
