@@ -18,8 +18,15 @@ task_prev 5 + const task_next
 
 : l1 0 { 1 + .. pause 20 x} ;
 : l2 100 { 1 + .. pause 20 x} ;
+: l3 1 { 2 * .. pause 20 x} ;
 ' l1 task t1
 t1 tasks !
 ' l2 task t2
-32 t2 task_dsp + !
-33 t2 task_rsp + !
+' l3 task t3
+
+16 t2 task_dsp + !
+16 t2 task_rsp + !
+
+32 t3 task_dsp + !
+32 t3 task_rsp + !
+
