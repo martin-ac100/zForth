@@ -48,7 +48,7 @@
 ( memory management )
 
 : allot  h +!  ;
-: var : ' lit , here 5 allot here swap ! 5 allot postpone ; ;
+: var : ' lit , here 5 allot postpone ; here swap ! 5 allot ;
 : const : ' lit , , postpone ; ;
 
 ( 'begin' gets the current address, a jump or conditional jump back is generated

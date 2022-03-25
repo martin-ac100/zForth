@@ -51,7 +51,7 @@ typedef unsigned int zf_addr;
  * number of elements of type zf_cell */
 
 #define ZF_DICT_SIZE 4096
-#define ZF_DSTACK_SIZE 32
-#define ZF_RSTACK_SIZE 32
+#define ZF_DSTACK_SIZE 256
+#define ZF_RSTACK_SIZE 256
 
 #endif

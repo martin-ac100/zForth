@@ -34,3 +34,4 @@
 : 16line ( a -- a_new ) dup .addr dup { 8hex 2 x} drop 16ascii cr ;
 : dump ( addr len -- ) over + swap begin 16line over over < until drop drop ; 
 
+: marker here latest @ : ' lit , , ' lit , , ' lit , h , ' ! , ' lit , latest , ' ! , postpone ; ;

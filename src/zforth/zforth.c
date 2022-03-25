@@ -52,6 +52,7 @@ typedef enum {
 	PRIM_JMP,     PRIM_JMP0,      PRIM_TICK, PRIM_COMMENT, PRIM_PUSHR,    PRIM_POPR,
 	PRIM_EQUAL,   PRIM_SYS,       PRIM_PICK, PRIM_COMMA,   PRIM_KEY,      PRIM_LITS,
 	PRIM_LEN,     PRIM_AND,       PRIM_OR,   PRIM_XOR,     PRIM_SHL,      PRIM_SHR,
+	PRIM_SWITCH_CONTEXT,
 	PRIM_COUNT
 } zf_prim;
 
@@ -61,7 +62,8 @@ static const char prim_names[] =
 	_("pickr")   _("_immediate") _("@@")    _("!!")    _("swap")      _("rot")
 	_("jmp")     _("jmp0")       _("'")     _("_(")    _(">r")        _("r>")
 	_("=")       _("sys")        _("pick")  _(",,")    _("key")       _("lits")
-	_("##")      _("&")          _("|")     _("^")     _("<<")        _(">>");
+	_("##")      _("&")          _("|")     _("^")     _("<<")        _(">>")
+	_("switch_context");
 
 
 /* Stacks and dictionary memory */
@@ -91,9 +93,10 @@ static jmp_buf jmpbuf;
 #define POSTPONE  uservar[ZF_USERVAR_POSTPONE]  /* flag to indicate next imm word should be compiled */
 #define dsp	  uservar[ZF_USERVAR_DSP]
 #define rsp	  uservar[ZF_USERVAR_RSP]
+#define TASKS	  uservar[ZF_USERVAR_TASKS]
 
 static const char uservar_names[] =
-	_("h")   _("latest") _("trace")  _("compiling")  _("_postpone")	_("dsp") _("rsp") _("tasks");
+	_("h")   _("latest") _("trace")  _("compiling")  _("_postpone")	_("dsp") _("rsp") _("task_runnig");
 
 static zf_addr *uservar = (zf_addr *)dict;
 
@@ -470,7 +473,6 @@ static void run(const char *input)
 		for(i=0; i<rsp; i++) trace("┊  ");
 		
 		ip += l;
-
 		if(code <= PRIM_COUNT) {
 			do_prim((zf_prim)code, input);
 
@@ -489,10 +491,8 @@ static void run(const char *input)
 		}
 
 		input = NULL;
-	} 
+	}
 }
-
-
 /*
  * Execute bytecode from given address
  */
@@ -533,6 +533,23 @@ static void do_prim(zf_prim op, const char *input)
 	trace("(%s) ", op_name(op));
 
 	switch(op) {
+		
+		case PRIM_SWITCH_CONTEXT:
+			if ( uservar[ZF_USERVAR_TASKS] ) {
+				dict_put_cell(TASKS + 10, dsp);
+				dict_put_cell(TASKS + 15, rsp);
+				dict_get_cell(TASKS + 25, &d1);
+				TASKS = d1;
+				dict_get_cell(TASKS + 10, &d1);
+				dsp = d1;
+				dict_get_cell(TASKS + 15, &d1);
+				rsp = d1;
+				if ( !rstack[rsp-1] ) {
+					dict_get_cell(TASKS + 5, &d1);
+					rstack[rsp-1] = d1;
+				}
+			}
+			break;
 
 		case PRIM_COL:
 			if(input == NULL) {

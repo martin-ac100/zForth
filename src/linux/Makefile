@@ -10,8 +10,8 @@ CC	:= $(CROSS)gcc
 VPATH   := ../zforth
 CFLAGS	+= -I. -I../zforth
 CFLAGS  += -Os -g -pedantic -MMD
-CFLAGS  += -fsanitize=address -Wall -Wextra -Werror -Wno-unused-parameter -Wno-clobbered -Wno-unused-result
-LDFLAGS	+= -fsanitize=address -g 
+CFLAGS  += -Wall -Wextra -Werror -Wno-unused-parameter -Wno-clobbered -Wno-unused-result
+LDFLAGS	+= -g 
 
 LIBS	+= -lm
 

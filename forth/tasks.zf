@@ -1,2 +1,25 @@
+( cooperative multitasking )
+5 const task_xt
+task_xt 5 + const task_dsp
+task_dsp 5 + const task_rsp
+task_rsp 5 + const task_prev
+task_prev 5 + const task_next
+: task_init ( XT addr -- )
+			0 over ! ( init state 0 = not running )
+			swap over task_xt + ! ( store XT )
+			tasks @ over task_prev + ! ( set previous task = running task )
+			tasks @ dup if task_next + @ over task_next + ! else drop dup dup task_next + ! fi ( set this. next task = next task of the running task )
+			tasks @ dup if task_next + ! else drop fi ( set running task_next = this task )
+			;
 
-: task ( XT -- ) : ' lit , here 5 allot here swap ! 
+: task ( XT -- addr ) var here 5 - 25 allot task_init ; 
+
+: pause switch_context ;
+
+: l1 0 { 1 + .. pause 20 x} ;
+: l2 100 { 1 + .. pause 20 x} ;
+' l1 task t1
+t1 tasks !
+' l2 task t2
+32 t2 task_dsp + !
+33 t2 task_rsp + !
