@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <math.h>
+#include <time.h>
 
 #ifdef USE_READLINE
 #include <readline/readline.h>
@@ -16,7 +17,6 @@
 #endif
 
 #include "zforth.h"
-
 
 
 /*
@@ -116,6 +116,9 @@ static void load(const char *fname)
 
 zf_input_state zf_host_sys(zf_syscall_id id, const char *input)
 {
+	struct timespec timer1;
+	int ms;
+
 	switch((int)id) {
 
 
@@ -128,6 +131,7 @@ zf_input_state zf_host_sys(zf_syscall_id id, const char *input)
 
 		case ZF_SYSCALL_PRINT:
 			printf(ZF_CELL_FMT " ", zf_pop());
+			fflush(stdout);
 			break;
 
 		case ZF_SYSCALL_TELL: {
@@ -158,6 +162,12 @@ zf_input_state zf_host_sys(zf_syscall_id id, const char *input)
 		
 		case ZF_SYSCALL_USER + 3:
 			save("zforth.save");
+			break;
+
+		case ZF_SYSCALL_USER + 4: //ms?
+			clock_gettime(CLOCK_MONOTONIC,&timer1);
+			ms = (timer1.tv_sec % 100000)*1000 + (timer1.tv_nsec / 1000000);
+			zf_push( ms );
 			break;
 
 		default:

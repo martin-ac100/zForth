@@ -93,10 +93,14 @@ static jmp_buf jmpbuf;
 #define POSTPONE  uservar[ZF_USERVAR_POSTPONE]  /* flag to indicate next imm word should be compiled */
 #define dsp	  uservar[ZF_USERVAR_DSP]
 #define rsp	  uservar[ZF_USERVAR_RSP]
-#define TASKS	  uservar[ZF_USERVAR_TASKS]
+#define TASK	  uservar[ZF_USERVAR_TASK]
+#define XT_OFFSET 5
+#define DSP_OFFSET 10
+#define RSP_OFFSET 15
+
 
 static const char uservar_names[] =
-	_("h")   _("latest") _("trace")  _("compiling")  _("_postpone")	_("dsp") _("rsp") _("task_runnig");
+	_("h")   _("latest") _("trace")  _("compiling")  _("_postpone")	_("dsp") _("rsp") _("task");
 
 static zf_addr *uservar = (zf_addr *)dict;
 
@@ -535,19 +539,17 @@ static void do_prim(zf_prim op, const char *input)
 	switch(op) {
 		
 		case PRIM_SWITCH_CONTEXT:
-			if ( uservar[ZF_USERVAR_TASKS] ) {
-				dict_put_cell(TASKS + 10, dsp);
-				dict_put_cell(TASKS + 15, rsp);
-				dict_get_cell(TASKS + 25, &d1);
-				TASKS = d1;
-				dict_get_cell(TASKS + 10, &d1);
-				dsp = d1;
-				dict_get_cell(TASKS + 15, &d1);
-				rsp = d1;
-				if ( !rstack[rsp-1] ) {
-					dict_get_cell(TASKS + 5, &d1);
-					rstack[rsp-1] = d1;
-				}
+			d1 = zf_pop(); // pop next task
+			dict_put_cell(TASK + DSP_OFFSET, dsp);
+			dict_put_cell(TASK + RSP_OFFSET, rsp);
+			TASK = d1;
+			dict_get_cell(TASK + DSP_OFFSET, &d1);
+			dsp = d1;
+			dict_get_cell(TASK + RSP_OFFSET, &d1);
+			rsp = d1;
+			if ( !rstack[rsp-1] ) {
+				dict_get_cell(TASK + XT_OFFSET, &d1);
+				rstack[rsp-1] = d1;
 			}
 			break;
 
