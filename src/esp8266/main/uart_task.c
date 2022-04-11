@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #include "uart_task.h"
+#include "esp_timer.h"
 
 #define d data[i]
 #define BUF_SIZE (512)
@@ -73,6 +74,7 @@ static void load()
 
 zf_input_state zf_host_sys(zf_syscall_id id, const char *last_word) {
 	int len;
+	int64_t time;
 	void *buf;
 
     switch((int)id) {
@@ -113,6 +115,10 @@ zf_input_state zf_host_sys(zf_syscall_id id, const char *last_word) {
 		enow_send((const char *)(buf+zf_pop()));
 		break;
 
+	case ZF_SYSCALL_USER + 4: //ms?
+		time = esp_timer_get_time();
+		zf_push( (zf_cell)(time & 0xFFFFFFFF) );
+		break;
 
         default:
             printf("unhandled syscall %d\n", id);
