@@ -116,7 +116,7 @@ zf_input_state zf_host_sys(zf_syscall_id id, const char *last_word) {
 		break;
 
 	case ZF_SYSCALL_USER + 4: //ms?
-		time = esp_timer_get_time();
+		time = esp_timer_get_time()/1000;
 		zf_push( (zf_cell)(time & 0xFFFFFFFF) );
 		break;
 

@@ -23,3 +23,4 @@ task_rsp 5 + const task_next
 : pause switch_task switch_context ;
 : ms 1 - ms? + task @ ! pause ;
 : stop_task max_val task @ ! ;
+: start_task ( addr -- ) 0 task @ ! ;
