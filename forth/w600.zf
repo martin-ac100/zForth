@@ -1,0 +1,20 @@
+: MEMR 129 sys ;
+: MEMW 130 sys ;
+
+0x40010C00 const GPIOA
+0x40011200 const GPIOB
+
+0x0 const IO_DATA
+0x04 const IO_DATA_EN
+0x08 const IO_DATA_DIR
+0x0c const IO_DATA_PULLEN
+0x10 const IO_AFSEL
+0x14 const IO_AFS1
+0x18 const IO_AFS0
+0x20 const IO_IS
+0x24 const IO_IBE
+0x28 const IO_IEV
+0x2C const IO_IE
+0x30 const IO_RIS
+0x34 const IO_MIS
+0x38 const IO_IC

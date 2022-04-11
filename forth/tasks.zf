@@ -8,29 +8,18 @@ task_rsp 5 + const task_next
 
 : ms? 132 sys ;
 : init_task ( XT addr -- )
-			max_val over ! ( task state = max_val -> task not running )
-			swap over task_xt + ! ( store XT )
-			task @ dup if task_next + @  else drop dup fi over task_next + ! ( next task = next task of the running task )
-			task @ dup if task_next + ! else drop fi ( set running task_next = this task )
+			( task state = max_val -> task suspended yet )
+			max_val over !
+			( store XT )
+			swap over task_xt + !
+			( task_next of the current running task => task_next of this task )
+			task @ dup if task_next + @  else drop dup task ! dup fi over task_next + !
+			( this task => task_next of the current running task )
+			task @ dup if task_next + ! else drop fi
 			;
 
-: start_task ( addr -- ) -1 swap ! ;
 : new_task ( XT -- addr ) var here 5 - 20 allot init_task ; 
-: switch_task task @ begin task_next + @ dup @ ms? < until -1 over ! ;
+: switch_task task @ begin task_next + @ dup @ ms? < until 0 over ! ;
 : pause switch_task switch_context ;
-: ms ms? + task @ ! pause ;
-
-: l1 0 { 1 + .. 500 ms 42 x} drop ;
-: l2 100 { 1 + .. 2000 ms 10 x} drop ;
-: l3 200 { 1 + .. 1000 ms 20 x} drop ;
-' l1 new_task t1 drop
-t1 task !
-' l2 new_task t2
-' l3 new_task t3
-
-16 t2 task_dsp + !
-16 t2 task_rsp + !
-
-32 t3 task_dsp + !
-32 t3 task_rsp + !
-
+: ms 1 - ms? + task @ ! pause ;
+: stop_task max_val task @ ! ;
