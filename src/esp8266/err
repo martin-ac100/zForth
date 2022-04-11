@@ -1,0 +1,13 @@
+/home/martin/src/forth/zForth/src/esp8266/main/uart_task.c: In function 'zf_host_sys':
+/home/martin/src/forth/zForth/src/esp8266/main/uart_task.c:112:13: warning: passing argument 1 of 'enow_send' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+   enow_send((const char *)zf_pop);
+             ^~~~~~~~~~~~~~~~~~~~
+In file included from /home/martin/src/forth/zForth/src/esp8266/main/uart_task.h:24,
+                 from /home/martin/src/forth/zForth/src/esp8266/main/uart_task.c:14:
+/home/martin/src/forth/zForth/src/esp8266/main/enow.h:25:27: note: expected 'char *' but argument is of type 'const char *'
+ esp_err_t enow_send(char *p_payload);
+                     ~~~~~~^~~~~~~~~
+/home/martin/src/forth/zForth/src/esp8266/main/zforth.c: In function 'zf_eval':
+/home/martin/src/forth/zForth/src/esp8266/main/zforth.c:920:31: warning: argument 'buf' might be clobbered by 'longjmp' or 'vfork' [-Wclobbered]
+ zf_result zf_eval(const char *buf)
+                   ~~~~~~~~~~~~^~~
