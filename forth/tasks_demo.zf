@@ -1,4 +1,8 @@
 ( multitasking demo )
+
+--multitasking_demo--
+marker --multitasking_demo--
+
 : l1 0 { 1 + 27 emit ." [31mTask1 " .. cr 250 ms 10 x} drop stop_task pause ;
 : l2 0 { 1 + 27 emit ." [32mTask2 " .. cr 500 ms 10 x} drop stop_task pause ;
 : l3 0 { 1 + 27 emit ." [34mTask3 " .. cr 1000 ms 10 x} drop stop_task pause ;
@@ -17,7 +21,7 @@
 48 t3 task_dsp + !
 48 t3 task_rsp + !
 
-: main t1 t2 t3 { start_task 3 x} ms? { 27 emit ." [0m-- " ms? over - . ." ms --" cr 1000 ms 12 x} stop_task ." DONE" ;
+: main t1 t2 t3 { 0 swap ! 3 x} ms? { 27 emit ." [0m-- " ms? over - . ." ms --" cr 1000 ms 12 x} stop_task ." DONE" ;
 ' main new_task t0
 t0 task !
 t0 
