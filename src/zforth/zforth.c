@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <setjmp.h>
 #include <stdint.h>
-
 #include "zforth.h"
 
 
@@ -52,7 +51,7 @@ typedef enum {
 	PRIM_JMP,     PRIM_JMP0,      PRIM_TICK, PRIM_COMMENT, PRIM_PUSHR,    PRIM_POPR,
 	PRIM_EQUAL,   PRIM_SYS,       PRIM_PICK, PRIM_COMMA,   PRIM_KEY,      PRIM_LITS,
 	PRIM_LEN,     PRIM_AND,       PRIM_OR,   PRIM_XOR,     PRIM_SHL,      PRIM_SHR,
-	PRIM_SWITCH_CONTEXT,
+	PRIM_SWITCH_CONTEXT, PRIM_START_TASK,
 	PRIM_COUNT
 } zf_prim;
 
@@ -63,7 +62,7 @@ static const char prim_names[] =
 	_("jmp")     _("jmp0")       _("'")     _("_(")    _(">r")        _("r>")
 	_("=")       _("sys")        _("pick")  _(",,")    _("key")       _("lits")
 	_("##")      _("&")          _("|")     _("^")     _("<<")        _(">>")
-	_("switch_context");
+	_("switch_context")	_("start_task");
 
 
 /* Stacks and dictionary memory */
@@ -540,16 +539,23 @@ static void do_prim(zf_prim op, const char *input)
 		
 		case PRIM_SWITCH_CONTEXT:
 			d1 = zf_pop(); // pop next task
-			dict_put_cell(TASK + DSP_OFFSET, dsp);
-			dict_put_cell(TASK + RSP_OFFSET, rsp);
-			TASK = d1;
-			dict_get_cell(TASK + DSP_OFFSET, &d1);
+			dict_put_cell(TASK + DSP_OFFSET, dsp); // save dsp
+			dict_put_cell(TASK + RSP_OFFSET, rsp); // save rsp
+			TASK = d1; // new task => current running task
+			dict_get_cell(TASK + DSP_OFFSET, &d1); // load new dsp
 			dsp = d1;
-			dict_get_cell(TASK + RSP_OFFSET, &d1);
-			rsp = d1;
-			if ( !rstack[rsp-1] ) {
-				dict_get_cell(TASK + XT_OFFSET, &d1);
-				rstack[rsp-1] = d1;
+			dict_get_cell(TASK + RSP_OFFSET, &d2); // load new rsp
+			rsp = d2;
+			break;
+
+		case PRIM_START_TASK:
+			d1 = zf_pop(); // pop task address
+			dict_put_cell(d1, 0); // task status 0 = running
+			if ( d1 != TASK ) { // if other then running task then restart task from XT
+				dict_get_cell(d1 + XT_OFFSET, &d2); // get XT of the task
+				dict_get_cell(d1 + RSP_OFFSET, &d3); // get rsp
+				rstack[(int)d3-1] = d2; // rsp-1 = exit from pause to XT
+				dict_put_cell(d1 + RSP_OFFSET, d3);
 			}
 			break;
 
